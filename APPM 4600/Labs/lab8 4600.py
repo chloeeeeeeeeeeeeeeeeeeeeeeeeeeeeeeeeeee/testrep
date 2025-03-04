@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[4]:
 
 
 """
@@ -102,10 +102,12 @@ def create_natural_spline(yint, xint, N):
     
     return M, C, D
 
+
 def eval_local_spline(x, xi, xip, Mi, Mip, Ci, Di):
     hi = xip - xi
     return ((Mi * (xip - x)**3 + Mip * (x - xi)**3) / (6 * hi) +
             (Ci * (x - xi) + Di))
+
 
 def eval_cubic_spline(xeval, Neval, xint, Nint, M, C, D):
     yeval = np.zeros(Neval)
@@ -119,6 +121,7 @@ def eval_cubic_spline(xeval, Neval, xint, Nint, M, C, D):
         yeval[ind] = yloc
     
     return yeval
+
 
 def driver_cubic():
     f = lambda x: np.exp(x)
@@ -138,9 +141,36 @@ def driver_cubic():
     mpl.plot(xeval, yeval, 'bs--', label='Cubic Spline')
     mpl.legend()
     mpl.show()
+    
+    
+def driver_exercise():
+    f = lambda x: 1 / (1 + (10 * x) ** 2)
+    a, b = -1, 1
+    Neval = 100
+    xeval = np.linspace(a, b, Neval)
+    Nint = 10
+    
+    yeval_lin = eval_lin_spline(xeval, Neval, a, b, f, Nint)
+    
+    xint = np.linspace(a, b, Nint + 1)
+    yint = f(xint)
+    M, C, D = create_natural_spline(yint, xint, Nint)
+    yeval_cubic = eval_cubic_spline(xeval, Neval, xint, Nint, M, C, D)
+    fex = f(xeval)
+    
+    mpl.figure()
+    mpl.plot(xeval, fex, 'ro-', label='Exact Function')
+    mpl.plot(xeval, yeval_lin, 'bs-', label='Linear Spline')
+    mpl.plot(xeval, yeval_cubic, 'g^-', label='Cubic Spline')
+    mpl.legend()
+    mpl.title("Spline Interpolation of f(x) = 1 / (1 + (10x)^2)")
+    mpl.show()
+
+
 
 driver_linear()
 driver_cubic()
+driver_exercise()
 
 
 # In[ ]:
